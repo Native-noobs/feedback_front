@@ -1,12 +1,16 @@
 import { Button, Flex, Input, Radio, Space } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
+import { QuestionType, Variants } from "../type/type";
+import { toast } from "react-toastify";
 
 const Question = () => {
   const token = localStorage.getItem("auth");
   const [user, setUser] = useState<any>();
-  const [question, setQuestion] = useState<any>();
-  const [feedback, setFeedback] = useState<{}>({});
+  const [question, setQuestion] = useState<QuestionType[]>();
+  const [feedback, setFeedback] = useState<{ [key: string]: string }>({});
+  const notify = (text: string, type: "success" | "error") => toast[type](text);
+
   useEffect(() => {
     fetch(import.meta.env.VITE_APP_URL + "/user/get-me", {
       headers: {
@@ -26,7 +30,7 @@ const Question = () => {
       .then((data) => {
         setQuestion(data.result);
       });
-  }, []);
+  }, [token]);
   const Submit = () => {
     const payload = Object.keys(feedback).map((e) => {
       return { feedback: feedback[e], question: e };
@@ -41,8 +45,8 @@ const Question = () => {
       body: JSON.stringify(payload),
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
+      .then(() => {
+        notify("Sizning murojaatingiz qabul qilindi", "success");
       });
   };
   return (
@@ -88,7 +92,7 @@ const Question = () => {
       <div className="container">
         <Content
           style={{
-            width: "700px",
+            maxWidth: "700px",
             margin: "0 auto",
           }}
         >
@@ -98,7 +102,7 @@ const Question = () => {
           <br />
           <br />
           <Flex vertical gap={20}>
-            {question?.map((e: any) => {
+            {question?.map((e: QuestionType) => {
               if (e.type == "single") {
                 return (
                   <Flex key={e.id} vertical gap={10}>
@@ -109,8 +113,29 @@ const Question = () => {
                       onChange={(event) => {
                         setFeedback({
                           ...feedback,
-                          [e.id]: event.target.value,
+                          [e.id as string]: event.target.value,
                         });
+                      }}
+                    />
+                  </Flex>
+                );
+              } else if (e.type == "number") {
+                return (
+                  <Flex key={e.id} vertical gap={10}>
+                    <label htmlFor={e.id}>{e.name}</label>
+                    <Input
+                      placeholder={e.name}
+                      id={e.id}
+                      value={feedback[e.id as string] || ""}
+                      onChange={(event) => {
+                        const { value: inputValue } = event.target;
+                        const reg = /^-?\d*(\.\d*)?$/;
+                        if (reg.test(inputValue) || inputValue === "") {
+                          setFeedback({
+                            ...feedback,
+                            [e.id as string]: inputValue,
+                          });
+                        }
                       }}
                     />
                   </Flex>
@@ -131,12 +156,12 @@ const Question = () => {
                       onChange={(event) => {
                         setFeedback({
                           ...feedback,
-                          [e.id]: event.target.value,
+                          [e.id as string]: event.target.value,
                         });
                       }}
                     >
                       <Space direction="vertical">
-                        {e.variants?.map((e: any) => {
+                        {e.variants?.map((e: Variants) => {
                           return (
                             <Radio key={e.id} value={e.name}>
                               {e.name}

@@ -1,17 +1,20 @@
 import dayjs from "dayjs";
 
 export interface QuestionType {
-    name: String;
-    type: "multi" | "single";
+    name: string;
+    type: "multi" | "single" | "number";
     variants: Variants[];
-    id?: String
+    status?: string;
+    id?: string
 }
 export interface Variants {
-    name: String;
+    name: string;
+    id?: string;
+    status?: string;
 }
 export interface FeedbackType {
-    id?: String;
-    feedback: String;
-    question: String;
+    id?: string;
+    feedback: string;
+    question: string;
     created_at: dayjs.Dayjs;
 }
