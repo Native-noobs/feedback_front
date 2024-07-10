@@ -4,6 +4,7 @@ import { Button, Image, Input, theme, Upload } from "antd";
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -44,23 +45,32 @@ const App: React.FC = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const [company, setCompany] = useState("");
-
+  const navigate = useNavigate();
   const saveInfo = () => {
-    fetch(import.meta.env.VITE_APP_URL + "/user/update_company", {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        company_name: company,
-        company_logo: fileList[0]?.response?.result?.file_id,
-      }),
-    }).then((res) => {
-      if (res.status == 200) {
-        notify("Muvaffaqqiyatli saqlandi", "success");
-      }
-    });
+    if (!fileList[0]?.response?.result?.file_id) {
+      notify("Kompaniya logosini yuklang", "error");
+    } else if (!company) {
+      notify("Kompaniya nomini kiriting", "error");
+    } else {
+      fetch(import.meta.env.VITE_APP_URL + "/user/update_company", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          company_name: company,
+          company_logo: fileList[0]?.response?.result?.file_id,
+        }),
+      }).then((res) => {
+        if (res.status == 401) {
+          navigate("/");
+        }
+        if (res.status == 200) {
+          notify("Muvaffaqqiyatli saqlandi", "success");
+        }
+      });
+    }
   };
   useEffect(() => {
     fetch(import.meta.env.VITE_APP_URL + "/user/get-me", {
