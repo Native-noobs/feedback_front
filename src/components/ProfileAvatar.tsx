@@ -14,7 +14,6 @@ const ProfileAvatar: React.FC = () => {
       .then((res) => res.json())
       .then((data) => {
         setUser(data.result);
-        console.log(data);
       });
   }, [token]);
   return (

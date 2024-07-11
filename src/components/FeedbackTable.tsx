@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { FeedbackType } from "../type/type";
 import { Button } from "antd";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const FeedbackTable = () => {
   const token = localStorage.getItem("auth");
   const [feedbacks, setFeedbacks] = useState<FeedbackType[]>([]);
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetch(import.meta.env.VITE_APP_URL + "/feedback", {
       headers: {
@@ -14,6 +17,9 @@ const FeedbackTable = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        if (data.code == 401) {
+          navigate("/");
+        }
         setFeedbacks(data.result);
       });
   }, [token]);
