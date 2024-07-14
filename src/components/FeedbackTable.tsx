@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { FeedbackType } from "../type/type";
-import { Button } from "antd";
-import dayjs from "dayjs";
+import { Button, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const FeedbackTable = () => {
   const token = localStorage.getItem("auth");
   const [feedbacks, setFeedbacks] = useState<FeedbackType[]>([]);
+  const [search, setSearch] = useState<string>();
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(import.meta.env.VITE_APP_URL + "/feedback", {
+    fetch(import.meta.env.VITE_APP_URL + "/feedback/v2?search=" + search, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -22,8 +22,7 @@ const FeedbackTable = () => {
         }
         setFeedbacks(data.result);
       });
-  }, [token]);
-
+  }, [token, search]);
   const handleDownload = async () => {
     try {
       const response = await fetch(
@@ -56,24 +55,42 @@ const FeedbackTable = () => {
       console.error("There was a problem with the fetch operation:", error);
     }
   };
+
   return (
     <div>
+      <Input
+        placeholder="Feedbacklar ichidan qidirish"
+        onChange={(e) => {
+          setSearch(e.target.value);
+        }}
+      />
+      <br />
+      <br />
+      <br />
       <table>
         <thead>
           <tr>
-            <td style={{ fontWeight: 800 }}>Savol</td>
-            <td style={{ fontWeight: 800 }}>Feedback</td>
-            <td style={{ fontWeight: 800 }}>Vaqti</td>
+            {feedbacks?.map((e, i) => {
+              return (
+                <td key={i} style={{ fontWeight: 800 }}>
+                  {e.question}
+                </td>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
           {feedbacks?.map((e) => {
             return (
-              <tr key={e.id as string}>
-                <td>{e.question}</td>
-                <td>{e.feedback}</td>
-                <td>{dayjs(e.created_at).format("YYYY-MM-DD HH-mm")}</td>
-              </tr>
+              <td style={{ width: "50%" }}>
+                {e.feedback.map((e) => {
+                  return (
+                    <tr>
+                      <td style={{ width: "100%" }}>{e}</td>
+                    </tr>
+                  );
+                })}
+              </td>
             );
           })}
         </tbody>

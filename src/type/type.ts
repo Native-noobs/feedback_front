@@ -1,5 +1,3 @@
-import dayjs from "dayjs";
-
 export interface QuestionType {
     name: string;
     type: "multi" | "single" | "number";
@@ -14,7 +12,6 @@ export interface Variants {
 }
 export interface FeedbackType {
     id?: string;
-    feedback: string;
     question: string;
-    created_at: dayjs.Dayjs;
+    feedback: [];
 }
