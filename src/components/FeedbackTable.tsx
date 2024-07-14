@@ -67,7 +67,7 @@ const FeedbackTable = () => {
       <br />
       <br />
       <br />
-      <table>
+      <table style={{ overflow: "scroll" }}>
         <thead>
           <tr>
             {feedbacks?.map((e, i) => {
@@ -82,11 +82,18 @@ const FeedbackTable = () => {
         <tbody>
           {feedbacks?.map((e) => {
             return (
-              <td style={{ width: "50%" }}>
+              <td>
                 {e.feedback.map((e) => {
                   return (
                     <tr>
-                      <td style={{ width: "100%" }}>{e}</td>
+                      <td
+                        style={{
+                          width: "100%",
+                          border: "none",
+                        }}
+                      >
+                        {e}
+                      </td>
                     </tr>
                   );
                 })}
