@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { FeedbackType } from "../type/type";
+import { FeedbackType, QuestionType } from "../type/type";
 import { Button, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const FeedbackTable = () => {
   const token = localStorage.getItem("auth");
   const [feedbacks, setFeedbacks] = useState<FeedbackType[]>([]);
+  const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [search, setSearch] = useState<string>();
   const navigate = useNavigate();
 
@@ -21,6 +22,18 @@ const FeedbackTable = () => {
           navigate("/");
         }
         setFeedbacks(data.result);
+      });
+    fetch(import.meta.env.VITE_APP_URL + "/question/for-admin", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.code == 401) {
+          navigate("/");
+        }
+        setQuestions(data.result);
       });
   }, [token, search]);
   const handleDownload = async () => {
@@ -67,41 +80,38 @@ const FeedbackTable = () => {
       <br />
       <br />
       <br />
-      <table style={{ overflow: "scroll" }}>
-        <thead>
-          <tr>
-            {feedbacks?.map((e, i) => {
-              return (
-                <td key={i} style={{ fontWeight: 800 }}>
-                  {e.question}
-                </td>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {feedbacks?.map((e) => {
+      <div style={{ overflow: "scroll" }}>
+        <div className="item">
+          {questions?.map((e) => {
             return (
-              <td>
-                {e.feedback.map((e) => {
-                  return (
-                    <tr>
-                      <td
-                        style={{
-                          width: "100%",
-                          border: "none",
-                        }}
-                      >
-                        {e}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </td>
+              <div key={e.id} className="row">
+                <div>Savol: {e.name}</div>
+              </div>
             );
           })}
-        </tbody>
-      </table>
+        </div>
+        <br />
+        <hr style={{ opacity: 0.5 }} />
+        <br />
+
+        {feedbacks?.map((e) => {
+          return (
+            <div key={e.id}>
+              <div className="item">
+                {e.answers.map((e) => {
+                  return (
+                    <div key={e.id} className="row">
+                      {/* <div>Savol: {e.question}</div> */}
+                      <div>Javob: {e.feedback}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <br />
+            </div>
+          );
+        })}
+      </div>
       <br />
       <Button type="primary" onClick={handleDownload}>
         Yuklab olish

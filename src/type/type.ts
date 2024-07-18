@@ -12,6 +12,11 @@ export interface Variants {
 }
 export interface FeedbackType {
     id?: string;
+    question: [];
+    answers: Answers[];
+}
+export interface Answers {
+    feedback: string;
     question: string;
-    feedback: [];
+    id: string
 }
