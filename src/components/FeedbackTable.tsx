@@ -68,7 +68,6 @@ const FeedbackTable = () => {
       console.error("There was a problem with the fetch operation:", error);
     }
   };
-
   return (
     <div>
       <Input
@@ -84,8 +83,12 @@ const FeedbackTable = () => {
         <div className="item">
           {questions?.map((e) => {
             return (
-              <div key={e.id} className="row">
-                <div>Savol: {e.name}</div>
+              <div
+                key={e.id}
+                className="row"
+                style={{ width: e?.name?.length * 11 }}
+              >
+                <div>{e.name}</div>
               </div>
             );
           })}
@@ -93,21 +96,22 @@ const FeedbackTable = () => {
         <br />
         <hr style={{ opacity: 0.5 }} />
         <br />
-
-        {feedbacks?.map((e) => {
+        {feedbacks?.map((el) => {
           return (
-            <div key={e.id}>
+            <div key={el.id}>
               <div className="item">
-                {e.answers.map((e) => {
+                {el.answers.map((e) => {
                   return (
-                    <div key={e.id} className="row">
-                      {/* <div>Savol: {e.question}</div> */}
-                      <div>Javob: {e.feedback}</div>
+                    <div
+                      key={e.id}
+                      className="row"
+                      style={{ width: e?.question?.length * 11 }}
+                    >
+                      <div>{e.feedback}</div>
                     </div>
                   );
                 })}
               </div>
-              <br />
             </div>
           );
         })}
